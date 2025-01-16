@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { WsException } from '@nestjs/websockets'; // ✅ Fix the import
+import { WsException } from '@nestjs/websockets';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 import { RedisService } from '../redis/redis.service';
