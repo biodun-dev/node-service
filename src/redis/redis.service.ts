@@ -17,7 +17,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       port: this.configService.get<number>('REDIS_PORT', 6379),
     });
 
-    this.subscriber = new Redis(this.client.options); // Separate subscriber connection
+    this.subscriber = new Redis(this.client.options);
 
     this.client.on('connect', () => this.logger.log('Connected to Redis'));
     this.client.on('error', (err) => this.logger.error('Redis Error:', err.message));
@@ -84,35 +84,6 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  // Listen for new users from Rails
-  async listenForUserEvents() {
-    await this.subscribe('user_created', async (message) => {
-      const user = JSON.parse(message);
-      this.logger.log(`✅ New user received from Rails: ${user.email}`);
-      await this.set(`user:${user.id}`, JSON.stringify(user), 3600);
-    });
-
-    await this.subscribe('user_updated', async (message) => {
-      const user = JSON.parse(message);
-      this.logger.log(`🔄 User updated from Rails: ${user.email}`);
-      await this.set(`user:${user.id}`, JSON.stringify(user), 3600);
-    });
-
-    await this.subscribe('user_deleted', async (message) => {
-      const { id } = JSON.parse(message);
-      this.logger.log(`❌ User deleted from Rails: ${id}`);
-      await this.delete(`user:${id}`);
-    });
-  }
-
-  // 🏆 Listen for leaderboard updates from Rails
-  async listenForLeaderboardUpdates() {
-    await this.subscribe('leaderboard_updated', async () => {
-      const leaderboard = await this.get('leaderboard_top_10');
-      this.logger.log(`🔄 Leaderboard updated: ${leaderboard}`);
-    });
-  }
-
   onModuleDestroy() {
     this.client.quit();
     this.subscriber.quit();
@@ -121,7 +92,5 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
   onModuleInit() {
     this.logger.log('RedisService Initialized');
-    this.listenForUserEvents(); // Start listening for user events
-    this.listenForLeaderboardUpdates(); // Start listening for leaderboard updates
   }
 }

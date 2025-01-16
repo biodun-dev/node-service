@@ -2,7 +2,7 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-@ApiTags('users') // Group API under 'users'
+@ApiTags('users') 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}

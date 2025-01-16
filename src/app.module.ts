@@ -8,6 +8,7 @@ import { MiddlewaresModule } from './middlewares/middlewares.module';
 import { AppConfigModule } from './config/config.module';
 import { RedisModule } from './redis/redis.module';
 import { WebsocketModule } from './websocket/websocket.module';
+import { WebsocketController } from './websocket/websocket.controller';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 
@@ -20,9 +21,10 @@ import { UserModule } from './user/user.module';
     UtilsModule, 
     MiddlewaresModule, 
     RedisModule, 
-    WebsocketModule, UserModule
+    WebsocketModule, 
+    UserModule
   ],
-  controllers: [AppController],
+  controllers: [AppController, WebsocketController],
   providers: [AppService],
 })
 export class AppModule {}
