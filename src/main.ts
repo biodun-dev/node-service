@@ -9,8 +9,8 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: '*',  // Allow all origins or replace with specific URLs like 'http://localhost:5000'
-    credentials: true,  // Allow credentials (cookies, Authorization header)
+    origin: '*', 
+    credentials: true, 
   });
 
   const config = new DocumentBuilder()
