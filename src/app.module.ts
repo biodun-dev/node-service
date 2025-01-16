@@ -10,6 +10,7 @@ import { WebsocketModule } from './websocket/websocket.module';
 import { WebsocketController } from './websocket/websocket.controller';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UserModule } from './user/user.module';
     RedisModule,
     WebsocketModule,
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController, WebsocketController],
   providers: [AppService],
