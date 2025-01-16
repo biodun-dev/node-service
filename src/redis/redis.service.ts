@@ -89,9 +89,19 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     await this.subscribe('user_created', async (message) => {
       const user = JSON.parse(message);
       this.logger.log(`✅ New user received from Rails: ${user.email}`);
-
-      // Store user in Redis cache
       await this.set(`user:${user.id}`, JSON.stringify(user), 3600);
+    });
+
+    await this.subscribe('user_updated', async (message) => {
+      const user = JSON.parse(message);
+      this.logger.log(`🔄 User updated from Rails: ${user.email}`);
+      await this.set(`user:${user.id}`, JSON.stringify(user), 3600);
+    });
+
+    await this.subscribe('user_deleted', async (message) => {
+      const { id } = JSON.parse(message);
+      this.logger.log(`❌ User deleted from Rails: ${id}`);
+      await this.delete(`user:${id}`);
     });
   }
 
