@@ -2,6 +2,7 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 import { LoggerService } from '../utils/logger.service';
+import { Server } from 'socket.io';
 
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
@@ -9,6 +10,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   private subscriber: Redis;
   private subscribedChannels: Set<string> = new Set();
   private handlers: Map<string, (message: string) => void> = new Map();
+  private websocketServer: Server | null = null; 
 
   constructor(
     private readonly configService: ConfigService,
@@ -32,10 +34,19 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
       if (this.handlers.has(channel)) {
         this.handlers.get(channel)?.(message);
-      } else {
-        this.logger.warn(`Unhandled Redis message received on channel: ${channel}`);
+      }
+
+      // ✅ Emit Redis Event to WebSocket Clients
+      if (this.websocketServer) {
+        this.websocketServer.emit(channel, JSON.parse(message));
+        this.logger.log(`WebSocket Broadcast: ${channel} -> ${message}`);
       }
     });
+  }
+
+  // ✅ Allow WebSocketGateway to set the WebSocket server
+  setWebSocketServer(server: Server) {
+    this.websocketServer = server;
   }
 
   async set(key: string, value: string, expire?: number): Promise<void> {
