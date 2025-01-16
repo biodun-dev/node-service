@@ -4,6 +4,7 @@ import { LoggerService } from '../utils/logger.service';
 import { WebsocketAuthService } from './websocket-auth';
 import { WebsocketMessagesService } from './websocket-messages';
 import { WebsocketBetService } from './websocket-bet';
+import { WebsocketEventsService } from './websocket-events';
 import { RedisService } from '../redis/redis.service';
 
 @WebSocketGateway({ cors: true })
@@ -16,6 +17,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     private readonly websocketAuthService: WebsocketAuthService,
     private readonly websocketMessagesService: WebsocketMessagesService,
     private readonly websocketBetService: WebsocketBetService,
+    private readonly websocketEventsService: WebsocketEventsService,
     private readonly redisService: RedisService
   ) {}
 
@@ -36,6 +38,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   async onModuleInit() {
     this.logger.log('WebSocket Gateway Initialized');
     this.websocketMessagesService.subscribeToLeaderboardUpdates(this.server);
-    this.websocketBetService.subscribeToBetEvents(this.server); // ✅ Subscribe to bet events
+    this.websocketBetService.subscribeToBetEvents(this.server);
+    this.websocketEventsService.subscribeToEventUpdates(this.server); // ✅ Subscribe to event updates
   }
 }
