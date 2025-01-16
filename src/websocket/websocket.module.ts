@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { WebsocketController } from './websocket.controller';
 import { WebsocketGateway } from './websocket.gateway';
+import { RedisModule } from '../redis/redis.module';
+import { UtilsModule } from '../utils/utils.module';
 
 @Module({
-  controllers: [WebsocketController],
-  providers: [WebsocketGateway]
+  imports: [RedisModule, UtilsModule],
+  providers: [WebsocketGateway],
 })
 export class WebsocketModule {}
