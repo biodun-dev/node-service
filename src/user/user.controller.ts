@@ -1,14 +1,15 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'; 
 import { UserService } from './user.service';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('users')
+@ApiBearerAuth('access-token') // Apply Bearer Auth globally to this controller
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // Protecting the route to get all users
+  // Route to get all users - protected with JWT guard
   @Get()
   @UseGuards(JwtAuthGuard)  // Protect this route with JWT guard
   @ApiOperation({ summary: 'Retrieve all users from Rails DB' })
@@ -17,7 +18,7 @@ export class UserController {
     return this.userService.getAllUsers();
   }
 
-  // Protecting the route to get user by email
+  // Route to get user by email - protected with JWT guard
   @Get(':email')
   @UseGuards(JwtAuthGuard)  // Protect this route with JWT guard
   @ApiOperation({ summary: 'Find a user by email' })

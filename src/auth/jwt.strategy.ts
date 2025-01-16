@@ -8,7 +8,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),  // Extract token from Authorization header
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'secret_key',  // Ensure this is the same secret key used by Rails to sign the JWT
+      secretOrKey: process.env.JWT_SECRET,  // Ensure this is the same secret key used by Rails to sign the JWT
     });
   }
 
