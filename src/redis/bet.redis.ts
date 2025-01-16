@@ -32,5 +32,11 @@ export class BetRedisService implements OnModuleInit {
       this.logger.log(`❌ Bet Deleted: ${id}`);
       await this.redisService.delete(`bet:${id}`);
     });
+
+    await this.redisService.subscribe('bet_winning_updated', async (message) => {
+      const { user_id, winnings } = JSON.parse(message);
+      this.logger.log(`🏆 Bet Winning Updated for User ${user_id}: ${winnings}`);
+      await this.redisService.set(`user_winnings:${user_id}`, winnings, 3600);
+    });
   }
 }
