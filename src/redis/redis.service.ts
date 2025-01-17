@@ -36,7 +36,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         this.handlers.get(channel)?.(message);
       }
 
-      // ✅ Emit Redis Event to WebSocket Clients
+      
       if (this.websocketServer) {
         this.websocketServer.emit(channel, JSON.parse(message));
         this.logger.log(`WebSocket Broadcast: ${channel} -> ${message}`);
@@ -44,7 +44,6 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
-  // ✅ Allow WebSocketGateway to set the WebSocket server
   setWebSocketServer(server: Server) {
     this.websocketServer = server;
   }

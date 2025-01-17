@@ -25,10 +25,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
   async onModuleInit() {
     this.logger.log('WebSocket Gateway Initialized');
-    
-    // ✅ Pass WebSocket Server to RedisService
     this.redisService.setWebSocketServer(this.server);
-
     await this.redisService.subscribeToAllEvents();
   }
 
@@ -45,13 +42,24 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   
     this.logger.log(`User authenticated: ${userId} | Socket ID: ${client.id}`);
   
+    // Check if user is online and mark them in Redis
+    const isOnline = await this.redisService.get(`online_user:${userId}`);
+    if (!isOnline) {
+      await this.redisService.set(`online_user:${userId}`, 'true', 3600);
+      this.logger.log(`User ${userId} connected and marked online.`);
+    } else {
+      this.logger.log(`User ${userId} reconnected.`);
+    }
+
+
     const leaderboardData = await this.redisService.get(`leaderboard:${userId}`);
     if (leaderboardData) {
       client.emit('leaderboard_updated', JSON.parse(leaderboardData));
       this.logger.log(`Sent cached leaderboard data to ${userId}`);
     }
+
+    this.logger.log(`Active connections: ${(await this.server.fetchSockets()).length}`);
   }
-  
 
   async handleDisconnect(client: Socket) {
     if (client.data.userId) {
