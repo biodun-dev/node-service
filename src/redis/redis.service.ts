@@ -171,6 +171,29 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       await this.set(`user:${user.id}`, JSON.stringify(user), 1800);
     });
 
+    await this.subscribe('leaderboard_updated', async (message) => {
+      this.logger.log(`Processing leaderboard_updated: ${message}`);
+      const leaderboard = JSON.parse(message);
+    
+      if (!leaderboard.user_id || leaderboard.total_winnings === undefined) {
+        this.logger.warn(`Invalid leaderboard_updated event received: ${message}`);
+        return;
+      }
+    
+      this.logger.log(`Leaderboard Updated: User ${leaderboard.user_id} - Total Winnings: ${leaderboard.total_winnings}`);
+    
+      await this.set(`leaderboard:${leaderboard.user_id}`, JSON.stringify(leaderboard), 3600);
+    
+      if (this.websocketServer) {
+        this.websocketServer.emit('leaderboard_updated', leaderboard);
+        this.logger.log(`WebSocket Broadcast: leaderboard_updated -> ${message}`);
+      } else {
+        this.logger.warn("WebSocket server not initialized. Cannot broadcast leaderboard update.");
+      }
+    });
+    
+    
+
     this.logger.log('Finished subscribing to all Redis events');
   }
 
