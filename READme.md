@@ -87,7 +87,7 @@ src
 
 4. Run the application:
    ```bash
-   npm run start
+   npm run start:dev
    ```
 
 ## API Endpoints

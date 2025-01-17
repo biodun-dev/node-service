@@ -13,7 +13,7 @@ export class WebsocketController {
       websocket_url: 'ws://localhost:5000',
       events: [
         { event: 'message', description: 'Send a message to a channel' },
-        { event: 'leaderboard_update', description: 'Receive real-time leaderboard updates' },
+        { event: 'leaderboard_updated', description: 'Receive real-time leaderboard updates' },
         { event: 'user_created', description: 'Receive a notification when a new user is created' },
         { event: 'user_updated', description: 'Receive a notification when a user is updated' },
         { event: 'user_deleted', description: 'Receive a notification when a user is deleted' },

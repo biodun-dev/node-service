@@ -42,7 +42,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   
     this.logger.log(`User authenticated: ${userId} | Socket ID: ${client.id}`);
   
-    // Check if user is online and mark them in Redis
+  
     const isOnline = await this.redisService.get(`online_user:${userId}`);
     if (!isOnline) {
       await this.redisService.set(`online_user:${userId}`, 'true', 3600);
