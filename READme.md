@@ -109,7 +109,10 @@ src
 
 ### WebSockets
 
-- `ws://localhost:3000/websockets` – Connect for real-time betting updates
+- `ws://localhost:5000/websockets` – Connect for real-time betting updates
+
+
+- `http://localhost:5000/api-docs` – Connect to swagga docs
 
 ## Running with Docker
 
