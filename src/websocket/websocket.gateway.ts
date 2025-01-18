@@ -4,7 +4,7 @@ import { LoggerService } from '../utils/logger.service';
 import { WebsocketAuthService } from './websocket-auth';
 import { RedisService } from '../redis/redis.service';
 import { Injectable } from '@nestjs/common';
-import { RateLimiterRedis } from 'rate-limiter-flexible';  // Import the rate limiter
+import { RateLimiterRedis } from 'rate-limiter-flexible'; 
 
 @Injectable()
 @WebSocketGateway({
