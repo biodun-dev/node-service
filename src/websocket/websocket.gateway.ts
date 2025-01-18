@@ -4,6 +4,7 @@ import { LoggerService } from '../utils/logger.service';
 import { WebsocketAuthService } from './websocket-auth';
 import { RedisService } from '../redis/redis.service';
 import { Injectable } from '@nestjs/common';
+import { RateLimiterRedis } from 'rate-limiter-flexible';  // Import the rate limiter
 
 @Injectable()
 @WebSocketGateway({
@@ -17,11 +18,19 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   @WebSocketServer()
   server: Server;
 
+  private rateLimiter: RateLimiterRedis;
+
   constructor(
     private readonly logger: LoggerService,
     private readonly websocketAuthService: WebsocketAuthService,
     private readonly redisService: RedisService
-  ) {}
+  ) {
+    this.rateLimiter = new RateLimiterRedis({
+      storeClient: redisService['client'],  
+      points: 5,  // 5 connections allowed
+      duration: 60,  // Per minute
+    });
+  }
 
   async onModuleInit() {
     this.logger.log('WebSocket Gateway Initialized');
@@ -31,7 +40,16 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
   async handleConnection(client: Socket) {
     this.logger.log(`New connection attempt: ${client.id} from ${client.handshake.address}`);
-  
+
+    const userIp = client.handshake.address;
+    try {
+      await this.rateLimiter.consume(userIp);  
+    } catch (rejRes) {
+      this.logger.warn(`Rate limit exceeded for IP: ${userIp}`);
+      client.disconnect();
+      return;
+    }
+
     const userId = await this.websocketAuthService.authenticate(client);
     
     if (!userId) {
@@ -42,7 +60,6 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   
     this.logger.log(`User authenticated: ${userId} | Socket ID: ${client.id}`);
   
-  
     const isOnline = await this.redisService.get(`online_user:${userId}`);
     if (!isOnline) {
       await this.redisService.set(`online_user:${userId}`, 'true', 3600);
@@ -50,7 +67,6 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     } else {
       this.logger.log(`User ${userId} reconnected.`);
     }
-
 
     const leaderboardData = await this.redisService.get(`leaderboard:${userId}`);
     if (leaderboardData) {
