@@ -6,14 +6,13 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),  // Extract token from Authorization header
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET,  // Ensure this is the same secret key used by Rails to sign the JWT
+      secretOrKey: process.env.JWT_SECRET,  
     });
   }
 
   async validate(payload: any) {
-    // You can add additional logic to validate the user if needed.
     return { userId: payload.user_id, email: payload.email };
   }
 }

@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisModule } from '../redis/redis.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([]), RedisModule], // No local entity
+  imports: [TypeOrmModule.forFeature([]), RedisModule],
   controllers: [UserController],
   providers: [UserService],
 })
