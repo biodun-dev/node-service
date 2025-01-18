@@ -92,10 +92,6 @@ src
 
 ## API Endpoints
 
-### Auth
-
-- `POST /auth/login` – Authenticate user & return JWT
-- `POST /auth/register` – Register a new user
 
 ### Users
 
